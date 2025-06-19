@@ -15,4 +15,5 @@ class TeamCleanup:
     
 df = TeamCleanup().team
 
-print(df.columns)
+#save to csv
+df.to_csv('clean_data/team.csv', index= False) 
