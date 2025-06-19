@@ -25,7 +25,7 @@ class Predictor(nn.Module):
         self.team_df['team_encoded'] = team_encoder.fit_transform(self.raw_team_df['team'])
         self.team_df['enemy_encoded'] = enemy_encoder.fit_transform(self.raw_team_df['enemy'])
 
-        self.team_df['win'] = self.raw_team_df['win'].astype(int)
+        self.team_df['win'] = self.raw_team_df['win']
 
         self.team_df['home'] = self.raw_team_df['home']
 
