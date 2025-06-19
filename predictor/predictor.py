@@ -27,7 +27,9 @@ class Predictor(nn.Module):
 
         self.team_df['win'] = self.raw_team_df['win'].astype(int)
 
-        X = self.team_df[['team_encoded', 'enemy_encoded']].values
+        self.team_df['home'] = self.raw_team_df['home']
+
+        X = self.team_df[['team_encoded', 'enemy_encoded', 'home']].values
         y = self.team_df['win'].values
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -40,7 +42,7 @@ class Predictor(nn.Module):
 
     def train(self):
         self.net = nn.Sequential(
-            nn.Linear(2, 8),
+            nn.Linear(3, 8),
             nn.ReLU(),
             nn.Linear(8, 1),
             nn.Sigmoid()
