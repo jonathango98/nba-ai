@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Predict NBA Outcome</title>
+</head>
+<body>
+    <form onsubmit="return validateForm()">
+        <fieldset>
+            <legend>Select Teams</legend>
+
+            <label>
+                <input type="radio" name="home_team" value="team_one" required>
+                Home
+            </label>
+            <select id="team_one" name="team_one" required></select>
+
+            <br><br>
+
+            <label>
+                <input type="radio" name="home_team" value="team_two" required>
+                Home
+            </label>
+            <select id="team_two" name="team_two" required></select>
+        </fieldset>
+
+        <br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <script>
+        var teamsList = {
+            "LAL": "Los Angeles Lakers",
+            "GSW": "Golden State Warriors",
+            "BOS": "Boston Celtics",
+            "MIA": "Miami Heat",
+            "NYK": "New York Knicks"
+        };
+
+        var select_one = document.getElementById("team_one");
+        var select_two = document.getElementById("team_two");
+
+        for (var index in teamsList) {
+            select_one.options[select_one.options.length] = new Option(teamsList[index], index);
+            select_two.options[select_two.options.length] = new Option(teamsList[index], index);
+        }
+
+        function validateForm() {
+            var teamOne = document.getElementById("team_one").value;
+            var teamTwo = document.getElementById("team_two").value;
+
+            if (teamOne === teamTwo) {
+                alert("Please choose two different teams.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

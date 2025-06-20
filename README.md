@@ -7,9 +7,9 @@ NBA AI is a machine learning project that predicts the outcome of NBA games usin
 This project is designed to be simple to set up and run:
 
 ```bash
-git clone https://github.com/your-username/nba-ai.git
+git clone https://github.com/jonathango98/nba-ai.git
 cd nba-ai
-python main.py  # Or your script name
+python main.py 
 ```
 
 *(Note: More detailed instructions may be added later as the project grows.)*
@@ -22,11 +22,12 @@ This project uses the standard stack for PyTorch-based machine learning. To get 
 - PyTorch
 - NumPy
 - Pandas
+- Flask
 
 You can install the base dependencies with:
 
 ```bash
-pip install torch pandas numpy
+pip install -r requirements.txt
 ```
 
 ## 🧠 Features
