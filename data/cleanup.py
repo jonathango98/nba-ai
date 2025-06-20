@@ -1,19 +1,53 @@
 import pandas as pd
+import re
+
+def to_snake_case(s):
+    """Convert a string to snake_case."""
+    return re.sub(r'[\W\s]+', '_', s).strip().lower()
 
 class TeamCleanup:
     def __init__(self):
         self.team_raw = pd.read_csv('raw_data/team_raw.csv') 
-        self.team_raw.drop(columns=['TEAM_NAME','FG_PCT','FG3_PCT','FT_PCT','REB','PF','PFD'], inplace=True)
+        self.team_raw.drop(columns=['TEAM_NAME','FG_PCT','FG3_PCT','FT_PCT','REB','PF','PFD', 'MIN'], inplace=True)
         self.team_raw.drop(self.team_raw.columns[-27:], axis=1, inplace=True)
         self.team_raw['WL'] = self.team_raw['WL'].replace({'W':1, 'L':0})
-        self.team_raw['row_num'] = self.team_raw.groupby('GAME_ID').cumcount() + 1
+
+        df_home = self.team_raw[self.team_raw['MATCHUP'].str.contains('vs.')].add_suffix('_home')
+        df_away =  self.team_raw[self.team_raw['MATCHUP'].str.contains('@')].add_suffix('_away')
+
+        df_merged = pd.merge(df_home, df_away, left_on="GAME_ID_home", right_on="GAME_ID_away") 
+        # print(df_merged)
+
+        #keep home column and delete home suffix
+        df_merged.drop(columns=['SEASON_YEAR_away', 'GAME_ID_away','GAME_DATE_away', 'MATCHUP_home', 'MATCHUP_away', 'WL_away'], inplace=True) 
+        df_merged.rename(columns={"SEASON_YEAR_home": "season_year", 
+                        "GAME_ID_home": "game_id", 
+                        "GAME_DATE_home": "game_date",
+                        "WL_home":"win_home"}, inplace=True) 
+
+        #change game_date to datetime object
+        df_merged['game_date'] = pd.to_datetime(
+            df_merged['game_date']
+            .str.replace('t', ' ', case=False)
+            .str.replace('_', '-', n=2)
+            .str.replace('_', ':', n=2),errors='coerce') 
+    
+        # #Convert column names to snakecase
+        df_merged.columns = [to_snake_case(col) for col in df_merged.columns]
+
+        # #Convert all string values in the DataFrame to snake_case
+        for col in df_merged.select_dtypes(include='object').columns:
+            df_merged[col] = df_merged[col].apply(lambda x: to_snake_case(x) if isinstance(x, str) else x)
         
-        df_pivot = self.team_raw.pivot(index='GAME_ID', columns='row_num')
-        df_pivot.columns = [f"{col}_{num}" for col, num in df_pivot.columns]
-        self.team = df_pivot.reset_index() 
+        print(df_merged.columns)
+        
+        self.team = df_merged
         
     
 df = TeamCleanup().team
 
 #save to csv
 df.to_csv('clean_data/team.csv', index= False) 
+# print(df['game_date'].dtype)
+
+# print(df.columns) 
