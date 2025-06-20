@@ -23,14 +23,16 @@ class TeamCleanup:
         df_merged.rename(columns={"SEASON_YEAR_home": "season_year", 
                         "GAME_ID_home": "game_id", 
                         "GAME_DATE_home": "game_date",
-                        "WL_home":"win_home"}, inplace=True) 
+                        "WL_home":"win_home",
+                        "TEAM_ABBREVIATION_home" : "team_home",
+                        "TEAM_ABBREVIATION_away": "team_away"}, inplace=True) 
 
         #change game_date to datetime object
         df_merged['game_date'] = pd.to_datetime(
             df_merged['game_date']
             .str.replace('t', ' ', case=False)
             .str.replace('_', '-', n=2)
-            .str.replace('_', ':', n=2),errors='coerce') 
+            .str.replace('_', ':', n=2),errors='coerce').apply(lambda x:int(x.timestamp()))
     
         # #Convert column names to snakecase
         df_merged.columns = [to_snake_case(col) for col in df_merged.columns]
@@ -39,7 +41,29 @@ class TeamCleanup:
         for col in df_merged.select_dtypes(include='object').columns:
             df_merged[col] = df_merged[col].apply(lambda x: to_snake_case(x) if isinstance(x, str) else x)
         
-        print(df_merged.columns)
+        df_merged['team_home'] = df_merged['team_home'].str.upper()
+        df_merged['team_away'] = df_merged['team_away'].str.upper()
+
+        df_merged = df_merged[['season_year', 'game_id', 'game_date', 'win_home',
+                                'team_id_home', 'team_id_away',
+                                'team_home', 'team_away',
+                                'fgm_home', 'fgm_away',
+                                'fga_home', 'fga_away',
+                                'fg3m_home', 'fg3m_away',
+                                'fg3a_home', 'fg3a_away',
+                                'ftm_home', 'ftm_away',
+                                'fta_home', 'fta_away',
+                                'oreb_home', 'oreb_away',
+                                'dreb_home', 'dreb_away',
+                                'ast_home', 'ast_away',
+                                'tov_home', 'tov_away',
+                                'stl_home', 'stl_away',
+                                'blk_home', 'blk_away',
+                                'blka_home', 'blka_away',
+                                'pts_home', 'pts_away',
+                                'plus_minus_home', 'plus_minus_away']] 
+
+        print(df_merged.dtypes)
         
         self.team = df_merged
         
