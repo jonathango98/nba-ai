@@ -62,14 +62,10 @@ class TeamCleanup:
                                 'blka_home', 'blka_away',
                                 'pts_home', 'pts_away',
                                 'plus_minus_home', 'plus_minus_away']] 
-
         print(df_merged.dtypes)
-        
         self.team = df_merged
         
-    
 df = TeamCleanup().team
-
 #save to csv
 df.to_csv('clean_data/team.csv', index= False) 
 # print(df['game_date'].dtype)
